@@ -1,0 +1,12 @@
+paramiko
+impacket
+telnetlib3
+pymysql
+psycopg2-binary
+redis
+pymongo
+poplib
+colorama
+tqdm
+socks
+pycryptodome
