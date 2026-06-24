@@ -78,3 +78,22 @@ python3 voltforce.py -h
 | --max-length-password | Maximum password length to try | python3 voltforce.py --host "127.0.0.1" --max-length-password 20 |
 | -nd/--no-duplicates | Remove duplicate entries from wordlists | python3 voltforce.py --host "127.0.0.1" -nd |
 | -db/--delay-between | Delay between attempts on the same host (seconds) | python3 voltforce.py --host "127.0.0.1" -db 0.5 |
+
+<img width="1316" height="480" alt="изображение" src="https://github.com/user-attachments/assets/8d5bbb05-7569-4a78-aa40-c65d863923f9" />
+
+# Use case
+
+This tool can be safely used in brute-force attacks against wordlists. Below is an example of a typical usage command:
+
+```
+python3 voltforce.py --host "110.124.65.231" -P "/usr/share/dirb/wordlists/common.txt" -siu "root" --timeout 0 --mode "ftp" --port 21 -o report.txt -sr "result.txt" -d 5 -shu -thr 200 -ie --timer
+```
+
+<img width="1300" height="177" alt="изображение" src="https://github.com/user-attachments/assets/dae3c635-4ece-4279-aacb-adf78c83d649" />
+
+
+
+This example demonstrates a typical usage scenario. All output from VoltForce is quite minimalistic. Important note: the more threads, the greater the load on your system. If you have too many threads, you will quickly be blocked by the IDS in real attacks. For seamless use, be sure to use the --random-timeout flag to specify the random timeout radius during testing, the --delay-between flag to specify delays between tests, and the very interesting --shuffle flag, which will shuffle your wordlists as many times as desired. The number of shuffles can be specified using the --shuffle-count flag.
+
+
+
