@@ -97,6 +97,6 @@ This example demonstrates a typical usage scenario. All output from VoltForce is
 
 <img width="545" height="89" alt="изображение" src="https://github.com/user-attachments/assets/4db8f645-6b64-4885-95a2-acb13216f0d6" />
 
-You can also use a SOCKS5 proxy. This is done using the `--socks5` flag. You can launch the Tor service and carry out the attack through it by simply specifying the address and port. If you wish to use a private proxy, you can also provide a username and password.
+You can also use a SOCKS5 proxy. This is done using the --socks5-address,--socks5-port,--socks5-username and --socks5-password flags. You can launch the Tor service and carry out the attack through it by simply specifying the address and port. If you wish to use a private proxy, you can also provide a username and password.
 
 
