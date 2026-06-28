@@ -107,3 +107,70 @@ python3 voltforce.py --hosts-list "hosts.txt" -P "passwords.txt" -U "users.txt" 
 
 
 You can specify only one username or one password when testing using the --single-username and --single-password flags, respectively. You can also specify the --stop-on-success flag to terminate the test after the credentials are found.
+
+I'd like to mention a few more important flags. I think the most interesting are the --reverse-usernames and --reverse-passwords flags. They allow you to reverse wordlists for usernames and passwords, respectively. This flag is very useful when you've already checked part of a wordlist and need to check the last passwords in the list.
+The --no-duplicates flag is equally useful. It removes duplicates from both wordlists. This is a very useful flag; it allows you to bypass checking wordlists for duplicates.
+The --general-wordlist flag is also very useful. Instead of two wordlists, you can specify a single wordlist where usernames and passwords should be written in a columnar format, "username:password." This way, you don't have to waste time specifying two wordlists.
+Another cool and useful flag is --ignore-errors. It will ignore all program errors and continue working.
+As for the last useful flags, I can't help but mention the --min-length-username, --max-length-username, --min-length-password, and --max-length-password flags. These can filter your wordlist by the minimum and maximum lengths of usernames and passwords, respectively. Sorting can take time, O(n) to be exact, but it's worth it. This flag is incredibly useful.
+
+# Brute-Forcing with SSH Keys
+
+VoltForce supports brute-force mode with SSH keys. To do this, you'll need to specify the --ssh-key flag. It's essentially the same as the --single-password flag. You only need to specify the path to the key file. Paramiko will detect the key type automatically. After specifying the wordlist with usernames and the target key, the brute-force process will begin. You can also specify the --keys-list flag. This is the same as --passwords-list. You should specify the paths to the target keys in the column. I decided to break this mode into a separate paragraph because it's essentially a hack. In the main code, it's actually substituted into the password field. It can confuse the user when analyzing the code, so I decided to write about it. You can easily use --passwords-list instead of --keys-list , and nothing will change, but I don't see the point unless you're really lazy.
+
+# Connections and Arbitrary Code Execution
+
+Yes, VoltForce can do that too. This mode is currently in testing, but you can already execute arbitrary code for SSH, Telnet, Redis, MySQL, and PostgreSQL after receiving login credentials. VoltForce activates interactive mode, and it will print the command output. This flag is super useful, but still rather crude. This is where the --keep-open flag comes in. It allows you to keep the connection open after receiving the data. This flag is useful when you need to immediately begin executing commands.
+
+# Parameters that can be used
+
+Here I'll mention some flags. Similar ones include: --banner, --no-banner, --delay, --quiet, --timer, and --shuffle-seed.
+--banner only displays the logo and exits. Honestly, I don't even know where such a flag would be useful.
+--no-banner, on the other hand, will simply not display the banner.
+--delay will delay before running the specified number of seconds.
+--quiet will not output anything at all. You might think the program is working incorrectly, but that's a lie. Logs will be written, and all attempts will be saved to the log file. If logging isn't enabled, this flag will enable it automatically.
+--timer will start a timer for the entire run and display the total run time at the end of the program. This flag is simply useful.
+--shuffle-seed allows you to specify a custom seed for shuffling the wordlist. You need to specify any positive integer. The seed allows you to specify a custom sort order. Use this flag with caution, as a poor seed will make the shuffling non-random.
+
+# About logging, threads, and the progress bar
+
+Let's start with logging. You can specify it using the -o parameter. If you don't specify a logging filename, VoltForce will create one named after the current date. The logging will record everything in detail. The time in the logging will be the most accurate date possible, including five decimal places for seconds. The message type will also be displayed. For example, if a parameter is being tested, the word "TESTING" will be displayed. Next, the service being tested and the logging message itself will be listed. This approach will ensure the most accurate logging for future security audits. You can disable logging using the --no-log flag.
+Now about threads. You can specify them using the -thr flag. By default, VoltForce uses 10 threads. Threads increase the speed by a factor of N, meaning that opening two threads will cut the search time in half. The more threads you have, the more connections you'll have, which means a higher chance of being blocked by IDS. Therefore, avoid using too many threads, especially if you have a slower PC.
+You can also specify the --progress-bar flag, which will display a progress bar showing your progress.Since the tqdm library is not thread-friendly, VoltForce will automatically disable it if the number of threads exceeds 15. Disabling this feature will cause tqdm to become extremely slow. You can also forcefully disable the progress bar using the --no-progress-bar flag. Therefore, if you want to perform an effective scan with a large number of threads and don't want to be banned by the IDS, use flags that reduce the chance of being banned. I've already listed them.
+
+# Disclaimer
+
+The author assumes no liability for the unauthorized use of this tool to obtain credentials. This tool is intended and used exclusively for legitimate security testing and testing of services on servers. Do not use it for malicious purposes!
+
+# License
+
+This tool is distributed under the MIT license. So to prevent you from opening the LICENSE file, I will write its contents here:
+
+```
+
+MIT License
+
+Copyright (c) 2026 Vesel4ak
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM,
+OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+```
+
+# About tool improvements
+
+This tool is truly a great thing. I plan to introduce many new flags and make it on par with giants like Hydra. At a minimum, we plan to add the --mutate flag to specify a target file containing multiple different strings for mutating logins and passwords. I think it will be a very useful flag. I'd also like to add the --resume flag so that, like in Hydra, you could pause and resume from a specific point after stopping. Another useful feature, I think, would be the introduction of brute-force mode for S3 buckets. I think this feature is really cool, and I only noticed it in the GObuster tool. I think it's truly a cool feature. Accordingly, since we're talking about web testing, it would be worth adding brute-force authentication for web pages like login.php. This would take the tool to the next level and allow it to be turned into something like WFUZZ or something similar. I'm also considering adding the --proxy-list flag, where you can specify a column of proxies for testing. Therefore, brute-forcing web forms will allow you to add HTTP proxies. Honestly, a tool like this could be developed almost endlessly. You could add 200 new flags, but then the usefulness of those flags becomes questionable. I think my latest addition suggestions are truly necessary and useful. I hope at least one person will be able to use this tool. It does, however, brute-force passwords and usernames quite quickly thanks to its multithreading. That's what saves it. You can run a tool like this on powerful computers and open multiple threads for maximum performance. Please, if you're a casual GitHub user, give this tool a try. I assure you, you won't regret it. I know the code is still pretty raw as of 2026. There are a lot of bugs, but I'm trying to fix them. Right now, you can safely use most of the parameters; they all work, though some are still buggy. And please, find me a single brute-forcer online that can provide such a flexible set of parameters for security testing.
